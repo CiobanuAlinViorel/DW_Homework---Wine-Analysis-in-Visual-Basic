@@ -1,42 +1,28 @@
-﻿Imports System.Windows.Forms
-Imports System.Drawing
+Imports System.Windows.Forms
 
 Public Class MainForm
+    Private form1Host As Form1
+    Private form2Host As Form2
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        ' Setăm fereastra principală
-        Me.Text = "WinesDW - Unified Dashboard"
-        Me.Size = New Size(1450, 1000)
-        Me.StartPosition = FormStartPosition.CenterScreen
-
-        ' Creăm controlul cu Tab-uri
-        Dim tabControl As New TabControl()
-        tabControl.Dock = DockStyle.Fill
-        tabControl.Font = New Font("Segoe UI Semibold", 10.0F)
-        Me.Controls.Add(tabControl)
-
-        ' --- TAB 1: Varianta Colegului (Form1) ---
-        Dim tab1 As New TabPage("Form1")
-        tabControl.TabPages.Add(tab1)
-
-        Dim frmColeg As New Form1()
-        frmColeg.TopLevel = False ' Esențial: îi spunem că nu mai e fereastră independentă
-        frmColeg.FormBorderStyle = FormBorderStyle.None ' Îi tăiem marginile și X-ul
-        frmColeg.Dock = DockStyle.Fill
-        tab1.Controls.Add(frmColeg)
-        frmColeg.Show()
-
-        ' --- TAB 2: Dashboard-ul Nostru (Form2) ---
-        Dim tab2 As New TabPage("📊 Dashboard Subcategorii")
-        tabControl.TabPages.Add(tab2)
-
-        Dim frmNoi As New Form2()
-        frmNoi.TopLevel = False
-        frmNoi.FormBorderStyle = FormBorderStyle.None
-        frmNoi.Dock = DockStyle.Fill
-        tab2.Controls.Add(frmNoi)
-        frmNoi.Show()
-
+        LoadEmbeddedForm(tabForm1, form1Host)
+        LoadEmbeddedForm(tabForm2, form2Host)
     End Sub
 
+    Private Sub LoadEmbeddedForm(Of TForm As {Form, New})(hostPage As TabPage, ByRef hostedForm As TForm)
+        If hostedForm IsNot Nothing AndAlso Not hostedForm.IsDisposed Then
+            Return
+        End If
+
+        hostPage.Controls.Clear()
+
+        hostedForm = New TForm() With {
+            .TopLevel = False,
+            .FormBorderStyle = FormBorderStyle.None,
+            .Dock = DockStyle.Fill
+        }
+
+        hostPage.Controls.Add(hostedForm)
+        hostedForm.Show()
+    End Sub
 End Class
